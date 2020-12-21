@@ -1,0 +1,150 @@
+body {
+    background-color: var(--standard-background-color);
+}
+
+.two-column-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background-color: azure;
+}
+
+.center-container {
+    display: grid;
+    place-content: center;
+}
+
+.field-set-container {
+    padding-top: 2em;
+}
+
+.separator {
+    margin: 1em 0 1em 0;
+    height: .5em;
+    width: 100%;
+    background-color: var(--customer-accent-color-1);
+}
+
+.left-side {
+    justify-self: end;
+    padding-right: 2em;
+}
+
+.right-side {
+    padding-left: 2em;
+}
+
+.switch-container {
+    display: flex;
+    align-items: center;
+    & label {
+        padding-right: 1em;
+    }
+}
+
+.field-set,
+.error-message-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    --label-column-width: 14em;
+}
+
+.error-message-container {
+    display: flex;
+    justify-content: flex-start;
+}
+
+div.error-message {
+    color: red;
+    display: none;
+}
+
+input {
+    border: none;
+    background-color: var(--input-background-color);
+    border-radius: 3px;
+    padding: 2px;
+    font-size: var(--input-font-size);
+    color: var(--input-text-color);
+}
+
+input[type=text] {
+    border: 1px solid var(--input-border-color);
+}
+
+input[type=text]:focus {
+    border: 1px solid var(--input-border-color-focused);
+}
+
+.custom-select {
+    background-color: var(--input-background-color);
+}
+
+
+/* input tag immediately followed by another input tag */
+
+input+input {
+    margin-left: 1em;
+}
+
+.field-set {
+    padding-bottom: var(--field-set-spacing);
+}
+
+.label-text-color {
+    color: var(--field-label-text-color);
+}
+
+.inline-label {
+    padding-left: 1em;
+    padding-right: .5em;
+    color: var(--field-label-text-color);
+}
+
+.field-set>label {
+    padding-right: .5em;
+    text-align: right;
+    width: var(--label-column-width);
+    color: var(--field-label-text-color);
+}
+
+.error-message-column-placeholder {
+    width: var(--label-column-width);
+}
+
+.main-buttons {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 16em;
+    align-items: center;
+}
+
+button {
+    background-color: blue;
+}
+
+.action-button {
+    color: #fff !important;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: #ed3330;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: inline-block;
+    border: none;
+    transition: all 0.4s ease 0s;
+}
+
+.go-button {
+    background-color: var(--go-button-color);
+}
+
+.action-link {
+    color: var(--field-label-text-color);
+    text-decoration: underline;
+}
+
+.main-buttons:not(:first-child) {
+    margin-left: 1em;
+    font-size: 4em;
+}

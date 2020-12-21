@@ -1,0 +1,48 @@
+.field-set-container {
+    width: 50%;
+}
+
+.field-set {
+    margin-top: .5rem;
+    display: grid;
+    align-items: center;
+    //    grid-template-areas: "label input" "message message";
+    border: 1px solid red;
+}
+
+.field-set label {
+    grid-area: label;
+    // text-align: right;
+    padding-right: 2rem;
+    // justify-self: end;
+    border: 1px solid;
+}
+
+.field-set input {
+    grid-area: input;
+    font-size: 1.5rem;
+}
+
+.error-message {
+    grid-area: message;
+    padding-top: .3rem;
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+    color: red;
+}
+
+input {
+    border: none;
+    background-color: silver;
+    border-radius: 3px;
+    padding: 4px;
+}
+
+input[type=text]:focus,
+select:focus {
+    border: 1px solid rgba(81, 203, 238, 1);
+}
+
+input+input {
+    margin-left: 1em;
+}

@@ -1,0 +1,24 @@
+header.main {
+    padding: 1.3em;
+    background-color: var(--customer-primary-color);
+    color: var(--header-text-color);
+}
+
+.page-heading {
+    font-size: 1.4rem;
+}
+
+div.debug-bar {
+    padding: .5em;
+    background-color: yellow;
+    font-size: .7rem;
+}
+
+footer {
+    font-size: .7rem;
+    padding: .5em;
+    background-color: var(--customer-primary-color);
+    color: var(--header-text-color);
+    display: flex;
+    justify-content: center;
+}

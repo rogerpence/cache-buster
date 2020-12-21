@@ -1,0 +1,36 @@
+{
+    "name": "forms-sass",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "sass:dev": "npx sass scss/global.scss dist/assets/css/global.css",
+        "sass:dev-watch": "npx sass scss/global.scss dist/assets/css/global.css --watch",
+        "sass:prod": "npx sass scss/global.scss dist/assets/css/global.css --style=compressed",
+        "minify-css": "postcss dist/assets/css/global.css > dist/assets/css/global.min.css",
+        "cache-bust": "node cache-bust -i ./dist/assets/css/main.css",
+        "production": "npm-run-all sass:dev minify-css cache-bust"
+    },
+    "keywords": [],
+    "author": "Roger Pence <rp@rogerpence.com> (rogerpence.com)",
+    "license": "ISC",
+    "devDependencies": {
+        "@fortawesome/fontawesome-pro": "^5.15.1",
+        "@fullhuman/postcss-purgecss": "^3.1.3",
+        "@rogerpence/edit-package-json": "^1.1.1",
+        "cheerio": "^1.0.0-rc.3",
+        "jssoup": "0.0.12",
+        "line-reader": "^0.4.0",
+        "nanoid": "^3.1.20",
+        "node-html-parser": "^2.0.0",
+        "npm-run-all": "^4.1.5",
+        "postcss": "^8.2.1",
+        "postcss-cachebuster": "^0.1.6",
+        "sass": "^1.30.0"
+    },
+    "dependencies": {
+        "cssnano": "^4.1.10",
+        "postcss-cli": "^8.3.1"
+    }
+}
