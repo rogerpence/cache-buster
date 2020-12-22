@@ -36,47 +36,64 @@ function getCmdLineArgs() {
                 .example('get-name --first-name* --last-name*')
         }, (argv) => {})
         .command('cache-buster', 'description for help here', (y) => {
-            return y
-                .option('css-files', {
-                    alias: 'c',
-                    type: 'array',
-                    desc: 'One or more CSS files',
-                    required: true
-                })
-                .option('css-owner-extensions', {
-                    alias: 'x',
-                    type: 'array',
-                    desc: 'CSS owner extensions',
-                    default: ['.html', 'cshtml', '.aspx', '.vue']
-                })
-                .option('css-owner-files', {
-                    alias: 'w',
-                    type: 'array',
-                    desc: 'One or more css owner files',
-                })
-                .option('directory', {
-                    alias: 'd',
-                    type: 'string',
-                    desc: 'directory',
-                    required: true
-                })
-                .command('tester', 'run tester')
-                .option('directory', {
-                    alias: 'd',
-                    type: 'string',
-                    desc: 'directory',
-                    required: true,
-                })
+            return addCacheBusterArgs(y);
+        }, (argv) => {})
+        .command('auto-cache-buster', 'description for help here', (y) => {
+            return addAutoCacheBusterArgs(y);
+        }, (argv) => {})
+        .command('list-css-references', 'description for help here', (y) => {
+            return addAutoCacheBusterArgs(y);
         }, (argv) => {})
         .argv;
 
     return args;
 }
 
+function addCacheBusterArgs(y) {
+    return y
+        .option('css-files', {
+            alias: 'c',
+            type: 'array',
+            desc: 'One or more CSS files',
+            required: true
+        })
+        .option('css-owner-extensions', {
+            alias: 'x',
+            type: 'array',
+            desc: 'CSS owner extensions',
+            default: ['.html', 'cshtml', '.aspx', '.vue']
+        })
+        .option('css-owner-files', {
+            alias: 'w',
+            type: 'array',
+            desc: 'One or more css owner files',
+        })
+        .option('directory', {
+            alias: 'd',
+            type: 'string',
+            desc: 'directory',
+            required: true
+        })
+}
+
+function addAutoCacheBusterArgs(y) {
+    return y
+        .option('css-owner-extensions', {
+            alias: 'x',
+            type: 'array',
+            desc: 'CSS owner extensions',
+            default: ['.html', 'cshtml', '.aspx', '.vue']
+        })
+        .option('directory', {
+            alias: 'd',
+            type: 'string',
+            desc: 'directory',
+            required: true,
+        })
+}
 
 if (require.main === module) {
     const args = getCmdLineArgs();
-    //    console.table(args);
 } else {
     module.exports = {
         getCmdLineArgs: getCmdLineArgs

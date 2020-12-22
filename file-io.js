@@ -23,7 +23,7 @@ function fileExists(filename) {
 }
 
 function readFile(inputFilename) {
-    return fs.readFileSync(inputFilename)
+    return fs.readFileSync(inputFilename, 'utf8')
 }
 
 function writeFile(outputFilename, contents) {
