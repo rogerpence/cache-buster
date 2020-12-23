@@ -51,7 +51,7 @@ function addCssCacheBusterArgs(y) {
             alias: 'x',
             type: 'array',
             desc: 'CSS owner extensions',
-            default: ['.html', 'cshtml', '.aspx', '.vue']
+            default: ['.html', '.cshtml', '.aspx', '.vue']
         })
         .option('root-directory', {
             alias: 'd',

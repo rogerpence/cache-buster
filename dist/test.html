@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heller Manufacturing</title>
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?v=YdH0Dq5RvK_u_xybjMrD1" rel="stylesheet">
-    
-    <link rel="stylesheet" href="assets/css/global.min.css?v=hW98vjQL1TKExH9zoYeZO">
-    <link rel="stylesheet" href="assets/css/main.css?v=utjWGn356KpI3UWgd0PNO">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="./assets/css/global.css?v=yVK7sDYIi9YqJhE_zruI2"> -->
+    <link rel="stylesheet" href="./assets/css/global.min.css?v=i3lzFwsAt4_pMNrZUoy3R">
+    <link rel="stylesheet" href="./assets/css/main.css?v=KiEhE_2wTQe4O6SY7JF1B">
 </head>
 
 <body>
@@ -62,7 +62,7 @@
 
             <div class="field-set">
                 <label for="description">Description</label>
-                <input class="w-lg" id="description" id="description" type="text">
+                <input class="w-lg" id="description" id="description" type="text"></divinput>
             </div>
             <div class="error-message-container">
                 <span class="error-message-column-placeholder"></span>
@@ -89,7 +89,19 @@
         </div>
 
         <div class="field-set-container right-side">
-            
+            <!-- 
+                This is Eckle's select. Leave this here for now.
+            <div class="field-set">
+                <label for="standard-select">Standard Select</label>
+                <div class="select">
+                    <select class="w-md">
+                        <option value="L">Large</option>
+                        <option value="M">Medium</option>
+                        <option value="L">Small</option>
+                    </select>
+                    <span class="focus"></span>
+                </div>
+            </div> -->
 
             <div class="field-set">
                 <input type="text" style="visibility: hidden;">
@@ -285,7 +297,10 @@
                 <div class="error-message">Error message</div>
             </div>
 
-            
+            <!-- 
+                This code implements my _select.scss. I didn't 
+                use Stephanie Eckles' _se-select.css.
+            -->
             <div class="field-set">
                 <label for="floor-stock-code">Floor Stock Code</label>
                 <div class="custom-select-container custom-select-large">
