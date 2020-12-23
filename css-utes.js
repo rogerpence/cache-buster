@@ -1,7 +1,7 @@
-const cmdargs = require('./get-args');
-const fileio = require('./file-io');
-const cb = require('./cache-buster');
-const acb = require('./auto-cache-buster');
+const cmdargs = require('./css-utes-members/get-args');
+const fileio = require('./css-utes-members/file-io');
+const cb = require('./css-utes-members/cache-buster');
+const acb = require('./css-utes-members/auto-cache-buster');
 
 /*
     node css-utes cache-buster -c assets/css/global.min.css assets/css/main.css -d dist
@@ -24,10 +24,14 @@ if (require.main === module) {
             argv.cssFiles,
             argv.cssOwnerFiles,
             argv.cssOwnerExtensions);
-    } else if (commandName === 'auto-cache-buster') {
-        acb.runAutoBuster(argv.directory, argv.cssOwnerExtensions);
-    } else if (commandName === 'list-css-references') {
-        acb.listOwnersAndCssFiles(argv.directory, argv.cssOwnerExtensions);
-    }
 
+    } else if (commandName === 'css-cache-buster') {
+        acb.runAutoBuster(argv.rootDirectory, argv.cssOwnerExtensions, argv.omitExternalCss);
+
+    } else if (commandName === 'list-css-references') {
+        acb.listOwnersAndCssFiles(argv.rootDirectory, argv.cssOwnerExtensions, argv.omitExternalCss);
+
+    } else {
+        console.log(`Command not found: ${commandName}`);
+    }
 }

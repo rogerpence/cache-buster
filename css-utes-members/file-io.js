@@ -27,7 +27,6 @@ function readFile(inputFilename) {
 }
 
 function writeFile(outputFilename, contents) {
-    console.log(`CSS reference updated in file ${outputFilename}`);
     fs.writeFileSync(outputFilename, contents);
 }
 

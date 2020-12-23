@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heller Manufacturing</title>
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?v=vvcET1hN7FQCRv6icxZYH" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?v=DwZ9CmA44h9zty1Bs4et3" rel="stylesheet">
     
-    <link rel="stylesheet" href="assets/css/global.min.css?v=b_rewl6oFS3ErMPdVUh-L">
-    <link rel="stylesheet" href="assets/css/main.css?v=UMHSZeSaBCnbMj4vG4AcS">
+    <link rel="stylesheet" href="assets/css/global.min.css?v=Z23PnVSDYSPXDhFDjnhET">
+    <link rel="stylesheet" href="assets/css/main.css?v=Yf-BtlsmsyRgYxZCJBRD3">
 </head>
 
 <body>

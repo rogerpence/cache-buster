@@ -4,45 +4,14 @@ function getCmdLineArgs() {
     let args = yargs
         .scriptName('css utilities')
         .usage('$0 <cmd> [args]')
-        .command('bust', 'description', (y) => {
-            return y
-                .option('css-files', {
-                    alias: 'c',
-                    type: 'array',
-                    desc: 'One or more CSS files',
-                })
-                .option('css-owner-extensions', {
-                    alias: 'x',
-                    type: 'array',
-                    desc: 'CSS owner extensions',
-                })
-                .example('css-cache-buster --css-files (-c) a [b...] --css-owner-files (-w) a [b...] --directory (-d)')
-        }, (argv) => {})
-        .command('get-name', 'description for help here', (y) => {
-            return y
-                .option('first-name', {
-                    alias: 'f',
-                    type: 'string',
-                    desc: 'get first name',
-                    required: true,
-                })
-                .option('last-name', {
-                    alias: 'l',
-                    type: 'string',
-                    desc: 'get last name',
-                    required: true
-                })
-                .example('* = required')
-                .example('get-name --first-name* --last-name*')
-        }, (argv) => {})
         .command('cache-buster', 'description for help here', (y) => {
             return addCacheBusterArgs(y);
         }, (argv) => {})
-        .command('auto-cache-buster', 'description for help here', (y) => {
-            return addAutoCacheBusterArgs(y);
+        .command('css-cache-buster', 'description for help here', (y) => {
+            return addCssCacheBusterArgs(y);
         }, (argv) => {})
         .command('list-css-references', 'description for help here', (y) => {
-            return addAutoCacheBusterArgs(y);
+            return addCssCacheBusterArgs(y);
         }, (argv) => {})
         .argv;
 
@@ -76,7 +45,7 @@ function addCacheBusterArgs(y) {
         })
 }
 
-function addAutoCacheBusterArgs(y) {
+function addCssCacheBusterArgs(y) {
     return y
         .option('css-owner-extensions', {
             alias: 'x',
@@ -84,12 +53,19 @@ function addAutoCacheBusterArgs(y) {
             desc: 'CSS owner extensions',
             default: ['.html', 'cshtml', '.aspx', '.vue']
         })
-        .option('directory', {
+        .option('root-directory', {
             alias: 'd',
             type: 'string',
             desc: 'directory',
             required: true,
         })
+        .option('omit-external-css', {
+            alias: 'o',
+            type: 'boolean',
+            desc: 'Omit external CSS',
+            default: false
+        })
+
 }
 
 if (require.main === module) {

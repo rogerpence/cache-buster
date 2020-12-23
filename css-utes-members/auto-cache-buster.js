@@ -2,7 +2,7 @@ const fileio = require('./file-io');
 const parser = require('node-html-parser');
 const fs = require('fs');
 const { nanoid } = require('nanoid');
-
+const path = require('path');
 
 function refreshLinks(fileContents, cssFiles) {
     const doc = parser.parse(fileContents);
@@ -15,6 +15,7 @@ function refreshLinks(fileContents, cssFiles) {
         const href = link.getAttribute('href');
         cssFiles.forEach(cssFile => {
             if (href.toLowerCase().includes(cssFile.toLowerCase())) {
+                console.log(`  Updating reference to ${cssFile}`);
                 const id = nanoid();
                 const queryString = `?v=${id}`;
                 link.setAttribute('href', `${cssFile}${queryString}`);
@@ -38,46 +39,69 @@ function injectHashedCssReference(directory, cssFiles, ownerFiles) {
     });
 }
 
-function findCssFiles(filename) {
+function findCssFiles(filename, omitExternalCss = false) {
     const fileContents = fileio.readFile(filename);
 
-    const regexp = /href=.*css/gmi;
-    const matches = [];
+    // const regexp = /href=.*css/gmi;
+    // const regexp = /\<link.*css/gmi;
+
+    const regexp = /\<link.*\>/gmi;
+    const cssInfo = [];
 
     const ms = [...fileContents.matchAll(regexp)];
     ms.forEach(m => {
-        const cssFile = m[0].replace(/^href=['"]/i, '');
-        matches.push(cssFile);
-    });
+        const linkLine = parser.parse(m[0]);
+        const linkElement = linkLine.querySelector('link');
 
-    return matches;
+        const href = linkElement.getAttribute('href');
+        const cssFile = href.replace(/\?.*/, '');
+        const queryString = href.replace(/^.*\?/, '');
+
+        cssInfo.push({
+            href,
+            cssFile,
+            queryString: href.includes('?') ? queryString : '',
+            newQueryString: ''
+        })
+    })
+
+    return cssInfo;
 }
 
-function runAutoBuster(directory, ownerExtensions) {
+function runAutoBuster(directory, ownerExtensions, omitExternalCss) {
+    let totalCssReferences = 0;
+
     const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
     cssOwnerFiles.forEach(filename => {
-        const cssFiles = findCssFiles(filename);
+        const cssFiles = findCssFiles(filename, omitExternalCss);
 
         let fileContents = fileio.readFile(filename);
         const originalFileContents = fileContents;
 
+        console.log(`Checking ${filename} for CSS references `);
         fileContents = refreshLinks(fileContents, cssFiles);
         if (fileContents) {
+            totalCssReferences++;
             fileio.writeFile(filename, fileContents);
         }
     });
+    console.log(`Total files updated: $ {totalCssReferences}`);
 }
 
-function listOwnersAndCssFiles(directory, ownerExtensions) {
+function listOwnersAndCssFiles(directory, ownerExtensions, omitExternalCss) {
     const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
+    let totalCssReferences = 0;
     cssOwnerFiles.forEach(filename => {
-        const cssFiles = findCssFiles(filename);
+        const cssFiles = findCssFiles(filename, omitExternalCss);
         console.log(`${filename.toUpperCase()} has ${cssFiles.length} CSS references.`);
         cssFiles.forEach(cssFile => {
-            console.log(`    ${cssFile}`);
+            console.log(`  ${cssFile.href} - ${cssFile.cssFile} - ${cssFile.queryString}`);
+            totalCssReferences++;
         });
         console.log('');
     });
+
+    console.log(`Total CSS file references: ${totalCssReferences}`);
 }
 
 if (require.main === module) {

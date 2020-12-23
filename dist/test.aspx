@@ -1,1 +1,1 @@
-<link rel="stylesheet" href="assets/css/global.min.css?v=s7vyjplBsKyetet5oKROr">
+<link rel="stylesheet" href="assets/css/global.min.css?v=vNDxpGlDVqOrIWkYqn8hE">
