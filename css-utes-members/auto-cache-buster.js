@@ -16,6 +16,8 @@ function parseLinks(directory, ownerExtensions) {
     const omitExternalCss = false;
     const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
 
+    const cssInfo = [];
+
     cssOwnerFiles.forEach(filename => {
         const fileContents = fileio.readFile(filename);
         const dom = new JSDOM(fileContents);
@@ -25,6 +27,14 @@ function parseLinks(directory, ownerExtensions) {
             if (link.rel.toLowerCase() == 'stylesheet') {
                 const href = link.href;
                 if (omitExternalCss && !href.toLowerCase().startsWith('http') || !omitExternalCss) {
+                    cssInfo.push({
+                        href,
+                        cssFile,
+                        queryString: href.includes('?') ? queryString : '',
+                        newQueryString: `${nanoid()}`
+                    })
+
+                    // Trim off query string.
                     const fileRef = href.replace(/\?.*$/, '');
                     link.href = `${fileRef}?${nanoid()}`;
                 }
