@@ -10,13 +10,50 @@ const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 const pretty = require('pretty');
 
+// function refreshLinks(fileContents, cssFiles) {
+//     const doc = parser.parse(fileContents);
+
+//     const saveContents = doc.outerHTML;
+
+//     const links = doc.querySelectorAll('link');
+
+//     links.forEach(link => {
+//         const href = link.getAttribute('href');
+//         cssFiles.forEach(cssFile => {
+//             if (href.toLowerCase().includes(cssFile.toLowerCase())) {
+//                 console.log(`  Updating reference to ${cssFile}`);
+//                 const id = nanoid();
+//                 const queryString = `?v=${id}`;
+//                 link.setAttribute('href', `${cssFile}${queryString}`);
+//             }
+//         })
+//     });
+
+//     return (saveContents === doc.outerHTML) ? null : doc.outerHTML;
+// }
+
+// function injectHashedCssReference(directory, cssFiles, ownerFiles) {
+//     ownerFiles.forEach(ownerFilename => {
+//         const fullTargetFilename = ownerFilename;
+//         let fileContents = fileio.readFile(fullTargetFilename);
+//         const originalFileContents = fileContents;
+
+//         fileContents = refreshLinks(fileContents, cssFiles);
+//         if (fileContents) {
+//             fileio.writeFile(fullTargetFilename, fileContents);
+//         }
+//     });
+// }
 
 function parseLinks(directory, ownerExtensions) {
 
     const omitExternalCss = false;
     const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
+    //const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index2.html'];
 
     cssOwnerFiles.forEach(filename => {
+        console.log(filename);
+
         const fileContents = fileio.readFile(filename);
         const dom = new JSDOM(fileContents);
 
@@ -34,6 +71,57 @@ function parseLinks(directory, ownerExtensions) {
         const fullDoc = pretty(dom.serialize());
         fileio.writeFile(filename, fullDoc);
         console.log(`${filename}`);
+
+
+        // JSSoup
+
+        // const soup = new JSSoup(fileContents);
+        // const ls = soup.findAll('link');
+        // console.table(ls);
+        // ls.forEach(l => {
+        //     if (l.attrs.rel == 'stylesheet') {
+        //         console.log(`jssoup = ${l}`);
+        //     }
+        // });
+
+        // Regex
+        // const regexp = /\<link.*stylesheet.*\>/gmi;
+        // const ms = [...fileContents.matchAll(regexp)];
+        // ms.forEach(m => {
+        //     console.log(`with regex = ${m.toString()}`);
+        // });
+        process.exit(1);
+
+        // const omitExternalCss = false;
+        const doc = parser.parse(fileContents);
+        //const links = doc.querySelectorAll('link[href^="http"]');
+        //const links = doc.querySelectorAll('link[rel="stylesheet"], :not(link[href^="http"])');
+        const links = doc.querySelectorAll('link');
+        console.log(links.length);
+        if (links.length == 0) {
+            console.log('none');
+            process.exit(1);
+        }
+
+
+
+        links.forEach(link => {
+            console.log(link.getAttribute('REL'));
+            if (link.getAttribute('REL').toLowerCase() == 'stylesheet') {
+                const href = link.getAttribute('href');
+                if (omitExternalCss && !href.toLowerCase().startsWith('http') || !omitExternalCss) {
+                    const fileRef = href.replace(/\?.*$/, '');
+                    link.setAttribute('href', `${fileRef}?${nanoid()}`);
+
+                    console.log('');
+                    console.log(`href= ${href}`);
+                    //console.log(`fileref= ${fileRef}`);
+                }
+            }
+        });
+
+        fileio.writeFile(filename, doc.outerHTML);
+        console.log('links replaced');
     });
 }
 
@@ -124,7 +212,7 @@ function processCss(directory, ownerExtensions, omitExternalCss, performUpdate) 
 
 if (require.main === module) {
     //    listOwnersAndCssFiles('dist', ['.html', '.aspx', 'cshtml']);
-    parseLinks('dist', ['.html', '.aspx', '.cshtml']);
+    parseLinks('C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist', ['.html', '.aspx', '.cshtml']);
 } else {
     module.exports = {
         findCssFiles,
