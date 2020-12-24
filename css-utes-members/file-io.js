@@ -27,7 +27,7 @@ function readFile(inputFilename) {
 }
 
 function writeFile(outputFilename, contents) {
-    fs.writeFileSync(outputFilename, contents);
+    fs.writeFileSync(outputFilename, contents, { encoding: 'utf8' });
 }
 
 function checkForFiles(fileList, directory = '') {

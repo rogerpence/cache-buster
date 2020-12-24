@@ -9,41 +9,99 @@ const JSSoup = require('jssoup').default;
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 const pretty = require('pretty');
+const querystring = require('querystring');
+const cheerio = require('cheerio');
+const { strict } = require('assert');
 
+function useCheerio(directory, ownerExtensions) {
+    const omitExternalCss = false;
+    //const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
+
+    const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
+    const cssInfo = [];
+
+    let $;
+
+    cssOwnerFiles.forEach(filename => {
+        const fileContents = fileio.readFile(filename);
+        $ = cheerio.load(fileContents, { decodeEntities: false });
+
+        const links = [];
+
+        $('link').each((i, link) => {
+            const href = $(link).attr('href');
+            const cssFile = href.replace(/\?.*/, '');
+            const queryString = href.replace(/^.*\?/, '');
+
+            const qs = querystring.parse(queryString);
+            qs.v = nanoid();
+            const newQs = querystring.stringify(qs);
+
+            $(link).attr('href', `${cssFile}?${newQs}`);
+            console.log('from');
+            console.log(`${cssFile}?${newQs}`);
+            console.log('to');
+            console.log($.html(link));
+        })
+    });
+
+    // console.log($.root().html());
+}
+
+function findAllMatchLocations(needle, haystack) {
+    let location = 0;
+    const locations = [];
+
+    do {
+        location = haystack.indexOf(needle, location);
+        if (location > 0) {
+            locations.push(location)
+        }
+    } while (location++ > 0);
+
+    return locations;
+}
 
 function parseLinks(directory, ownerExtensions) {
 
     const omitExternalCss = false;
-    const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
+    //const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
+
+    const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
 
     const cssInfo = [];
 
     cssOwnerFiles.forEach(filename => {
-        const fileContents = fileio.readFile(filename);
+        let fileContents = fileio.readFile(filename);
         const dom = new JSDOM(fileContents);
+
+        const cssInfo = [];
 
         const ls = dom.window.document.querySelectorAll('link');
         ls.forEach(link => {
             if (link.rel.toLowerCase() == 'stylesheet') {
-                const href = link.href;
-                if (omitExternalCss && !href.toLowerCase().startsWith('http') || !omitExternalCss) {
-                    cssInfo.push({
-                        href,
-                        cssFile,
-                        queryString: href.includes('?') ? queryString : '',
-                        newQueryString: `${nanoid()}`
-                    })
+                const cssInfoObject = {}
+                cssInfoObject.href = link.href;
+                cssInfoObject.oldHref = link.href;
+                cssInfoObject.cssFile = cssInfoObject.href.replace(/\?.*/, '');
+                cssInfoObject.queryString = (cssInfoObject.href.includes('?')) ? cssInfoObject.href.replace(/^.*\?/, '') : '';
 
-                    // Trim off query string.
-                    const fileRef = href.replace(/\?.*$/, '');
-                    link.href = `${fileRef}?${nanoid()}`;
+                if (cssInfoObject.cssFile.match(/\.css$/i)) {
+                    if (omitExternalCss && !cssInfoObjecthref.toLowerCase().startsWith('http') || !omitExternalCss) {
+                        const qs = querystring.parse(cssInfoObject.queryString);
+                        qs.v = nanoid();
+                        cssInfoObject.newQueryString = querystring.stringify(qs);
+                    }
+                    link.href = cssInfoObject.cssFile + '?' + cssInfoObject.newQueryString;
+                    if ((findAllMatchLocations(cssInfoObject.oldHref, fileContents)).length == 1) {
+                        fileContents = fileContents.replace(cssInfoObject.oldHref, link.href);
+                        console.log(`${link.href} replaced ${cssInfoObject.oldHref}`);
+                    }
                 }
             }
         });
 
-        const fullDoc = pretty(dom.serialize());
-        fileio.writeFile(filename, fullDoc);
-        console.log(`${filename}`);
+        fileio.writeFile(filename, fileContents);
     });
 }
 
@@ -135,6 +193,7 @@ function processCss(directory, ownerExtensions, omitExternalCss, performUpdate) 
 if (require.main === module) {
     //    listOwnersAndCssFiles('dist', ['.html', '.aspx', 'cshtml']);
     parseLinks('dist', ['.html', '.aspx', '.cshtml']);
+    //useCheerio('dist', ['.html', '.aspx', '.cshtml']);
 } else {
     module.exports = {
         findCssFiles,
