@@ -62,12 +62,12 @@ function findAllMatchLocations(needle, haystack) {
     return locations;
 }
 
-function parseLinks(directory, ownerExtensions) {
+function parseLinks(directory, ownerExtensions, performUpdate = false) {
 
     const omitExternalCss = false;
-    //const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
+    const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
 
-    const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
+    // const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
 
     const cssInfo = [];
 
@@ -77,6 +77,7 @@ function parseLinks(directory, ownerExtensions) {
 
         const cssInfo = [];
 
+        console.log(filename);
         const ls = dom.window.document.querySelectorAll('link');
         ls.forEach(link => {
             if (link.rel.toLowerCase() == 'stylesheet') {
@@ -85,6 +86,7 @@ function parseLinks(directory, ownerExtensions) {
                 cssInfoObject.oldHref = link.href;
                 cssInfoObject.cssFile = cssInfoObject.href.replace(/\?.*/, '');
                 cssInfoObject.queryString = (cssInfoObject.href.includes('?')) ? cssInfoObject.href.replace(/^.*\?/, '') : '';
+                cssInfo.push(cssInfoObject);
 
                 if (cssInfoObject.cssFile.match(/\.css$/i)) {
                     if (omitExternalCss && !cssInfoObjecthref.toLowerCase().startsWith('http') || !omitExternalCss) {
@@ -95,16 +97,17 @@ function parseLinks(directory, ownerExtensions) {
                     link.href = cssInfoObject.cssFile + '?' + cssInfoObject.newQueryString;
                     if ((findAllMatchLocations(cssInfoObject.oldHref, fileContents)).length == 1) {
                         fileContents = fileContents.replace(cssInfoObject.oldHref, link.href);
-                        console.log(`${link.href} replaced ${cssInfoObject.oldHref}`);
+                        console.log(`  ${link.href} replaced ${cssInfoObject.oldHref}`);
                     }
                 }
             }
         });
 
-        fileio.writeFile(filename, fileContents);
+        if (performUpdate) {
+            fileio.writeFile(filename, fileContents);
+        }
     });
 }
-
 
 function findCssFiles(filename, performUpdate, omitExternalCss = false) {
     const fileContents = fileio.readFile(filename);
