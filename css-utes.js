@@ -26,12 +26,20 @@ if (require.main === module) {
             argv.cssOwnerExtensions);
 
     } else if (commandName === 'css-cache-buster') {
-        acb.runAutoBuster(argv.rootDirectory, argv.cssOwnerExtensions, argv.omitExternalCss);
+        acb.runAutoBuster(argv.rootDirectory, argv.cssOwnerExtensions, argv.update);
 
-    } else if (commandName === 'list-css-references') {
-        acb.listOwnersAndCssFiles(argv.rootDirectory, argv.cssOwnerExtensions, argv.omitExternalCss);
+    } else if (commandName === 'css') {
+        acb.runAutoBusterPreview(argv.rootDirectory, argv.cssOwnerExtensions, argv.omitExternalCss);
 
     } else {
         console.log(`Command not found: ${commandName}`);
     }
 }
+
+/*
+To update CSS links
+    node css-utes css-cache-buster -d dist -u
+
+To list CSS link
+    node css-utes css-cache-buster -d dist -u
+*/

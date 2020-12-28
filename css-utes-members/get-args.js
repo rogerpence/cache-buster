@@ -47,22 +47,22 @@ function addCacheBusterArgs(y) {
 
 function addCssCacheBusterArgs(y) {
     return y
-        .option('css-owner-extensions', {
-            alias: 'x',
-            type: 'array',
-            desc: 'CSS owner extensions',
-            default: ['.html', '.cshtml', '.aspx', '.vue']
-        })
         .option('root-directory', {
             alias: 'd',
             type: 'string',
             desc: 'directory',
             required: true,
         })
-        .option('omit-external-css', {
-            alias: 'o',
+        .option('css-owner-extensions', {
+            alias: 'x',
+            type: 'array',
+            desc: 'CSS owner extensions',
+            default: ['.html', '.cshtml', '.aspx', '.vue']
+        })
+        .option('update', {
+            alias: 'u',
             type: 'boolean',
-            desc: 'Omit external CSS',
+            desc: 'perform update',
             default: false
         })
 

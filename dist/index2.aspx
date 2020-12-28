@@ -5,8 +5,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Roboto&amp;display=swap" rel="stylesheet">
     <!-- <link rel="stylesheet" href="./assets/css/global.css"> -->
-    <link rel="stylesheet" href="./assets/css/global.min.css?v=xxx">
-    <link rel="stylesheet" href="./assets/css/main.css?v=xxx">
+    <link rel="stylesheet" href="./assets/css/global.min.css?v=qkco8_BDeufHD8FE4znlt">
+    <link rel="stylesheet" href="./assets/css/main.css?v=fqdKw-1arfZXKKoh547-F">
 </head>
 
 <body>
