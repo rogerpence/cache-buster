@@ -65,9 +65,9 @@ function findAllMatchLocations(needle, haystack) {
 function parseLinks(directory, ownerExtensions, performUpdate = false) {
 
     const omitExternalCss = false;
-    const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
+    // const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
 
-    // const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
+    const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
 
     const cssInfo = [];
 
@@ -95,9 +95,12 @@ function parseLinks(directory, ownerExtensions, performUpdate = false) {
                         cssInfoObject.newQueryString = querystring.stringify(qs);
                     }
                     link.href = cssInfoObject.cssFile + '?' + cssInfoObject.newQueryString;
-                    if ((findAllMatchLocations(cssInfoObject.oldHref, fileContents)).length == 1) {
+                    // if ((findAllMatchLocations(cssInfoObject.oldHref, fileContents)).length == 1) {
+                    if ((findAllMatchLocations(cssInfoObject.cssFile, fileContents)).length == 1) {
                         fileContents = fileContents.replace(cssInfoObject.oldHref, link.href);
                         console.log(`  ${link.href} replaced ${cssInfoObject.oldHref}`);
+                    } else {
+                        console.log(`duplicate ${cssInfoObject.cssFile}`);
                     }
                 }
             }
@@ -195,7 +198,9 @@ function processCss(directory, ownerExtensions, omitExternalCss, performUpdate) 
 
 if (require.main === module) {
     //    listOwnersAndCssFiles('dist', ['.html', '.aspx', 'cshtml']);
-    parseLinks('dist', ['.html', '.aspx', '.cshtml']);
+
+    //parseLinks('dist', ['.html', '.aspx', '.cshtml'], mode='update');
+    parseLinks('dist', ['.html', '.aspx', '.cshtml'], performUpdate = false);
     //useCheerio('dist', ['.html', '.aspx', '.cshtml']);
 } else {
     module.exports = {
