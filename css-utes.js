@@ -14,7 +14,7 @@ if (require.main === module) {
 
     if (commandName === 'cache-buster') {
         if (!argv.cssOwnerFiles) {
-            argv.cssOwnerFiles = fileio.walk(argv.directory, argv.cssOwnerExtensions);
+            argv.cssOwnerFiles = fileio.walk(argv.directory, argv.cssOwnerExtensions, argv.includeExternalCss);
         } else {
             fileio.checkForFiles(argv.cssOwnerFiles);
         }
@@ -26,7 +26,7 @@ if (require.main === module) {
             argv.cssOwnerExtensions);
 
     } else if (commandName === 'css-cache-buster') {
-        acb.runAutoBuster(argv.rootDirectory, argv.cssOwnerExtensions, argv.update);
+        acb.runAutoBuster(argv.rootDirectory, argv.update, argv.cssOwnerExtensions, argv.includeExternalCss);
 
     } else if (commandName === 'css') {
         acb.runAutoBusterPreview(argv.rootDirectory, argv.cssOwnerExtensions, argv.omitExternalCss);

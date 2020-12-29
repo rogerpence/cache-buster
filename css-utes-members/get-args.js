@@ -20,7 +20,7 @@ function getCmdLineArgs() {
 
 function addCacheBusterArgs(y) {
     return y
-        .option('css-files', {
+        .option('css-filesdddddddddddddd', {
             alias: 'c',
             type: 'array',
             desc: 'One or more CSS files',
@@ -53,19 +53,24 @@ function addCssCacheBusterArgs(y) {
             desc: 'directory',
             required: true,
         })
-        .option('css-owner-extensions', {
-            alias: 'x',
-            type: 'array',
-            desc: 'CSS owner extensions',
-            default: ['.html', '.cshtml', '.aspx', '.vue']
-        })
         .option('update', {
             alias: 'u',
             type: 'boolean',
             desc: 'perform update',
             default: false
         })
-
+        .option('css-owner-extensions', {
+            alias: 'x',
+            type: 'array',
+            desc: 'CSS owner extensions',
+            default: ['.html', '.cshtml', '.aspx', '.vue']
+        })
+        .option('include-external-css', {
+            alias: 'i',
+            type: 'boolean',
+            desc: 'include external CSS',
+            default: false
+        })
 }
 
 if (require.main === module) {

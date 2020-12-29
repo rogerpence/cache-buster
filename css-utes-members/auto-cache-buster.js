@@ -28,17 +28,18 @@ function findAllMatchLocations(needle, haystack) {
     return locations;
 }
 
-function parseLinks(directory, ownerExtensions, performUpdate = false) {
+function parseLinks(directory, performUpdate = false, ownerExtensions, includeExternalCss = false) {
     if (performUpdate) {
         console.log(chalk.green.bgWhite('Files will be updated'));
     } else {
         console.log(chalk.blue.bgYellow('Listing files only... no update will be performed'));
     }
 
-    const omitExternalCss = false;
-    const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
+    // const omitExternalCss = false;
+    //const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
 
-    //const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
+    const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
+    console.log(includeExternalCss);
 
     const cssInfo = [];
     let cssFileDuplicatesNameOnly;
@@ -62,31 +63,31 @@ function parseLinks(directory, ownerExtensions, performUpdate = false) {
                 cssInfoObject.oldHref = link.href;
                 cssInfoObject.cssFile = cssInfoObject.href.replace(/\?.*/, '');
                 cssInfoObject.queryString = (cssInfoObject.href.includes('?')) ? cssInfoObject.href.replace(/^.*\?/, '') : '';
-                cssInfo.push(cssInfoObject);
 
                 if (cssInfoObject.cssFile.toLowerCase().endsWith('.css')) {
-                    if (omitExternalCss && !cssInfoObjecthref.toLowerCase().startsWith('http') || !omitExternalCss) {
+                    if (includeExternalCss || !includeExternalCss && !cssInfoObject.cssFile.toLowerCase().startsWith('http')) {
+                        cssInfo.push(cssInfoObject);
                         const qs = querystring.parse(cssInfoObject.queryString);
                         qs.v = nanoid();
                         cssInfoObject.newQueryString = querystring.stringify(qs);
-                    }
-                    link.href = cssInfoObject.cssFile + '?' + cssInfoObject.newQueryString;
-                    const locations = findAllMatchLocations(cssInfoObject.cssFile, fileContents);
+                        link.href = cssInfoObject.cssFile + '?' + cssInfoObject.newQueryString;
+                        const locations = findAllMatchLocations(cssInfoObject.cssFile, fileContents);
 
-                    fileContents = fileContents.replace(cssInfoObject.oldHref, link.href);
-                    let msg;
-                    if (performUpdate) {
-                        msg = `  ${cssInfoObject.cssFile} query string replaced`
-                        console.log(chalk.green(msg));
-                    } else {
-                        msg = `  ${cssInfoObject.cssFile} query string would be replaced`
-                        console.log(chalk.white(msg));
-                    }
+                        fileContents = fileContents.replace(cssInfoObject.oldHref, link.href);
+                        let msg;
+                        if (performUpdate) {
+                            msg = `  ${cssInfoObject.cssFile} query string replaced`
+                            console.log(chalk.green(msg));
+                        } else {
+                            msg = `  ${cssInfoObject.cssFile} query string would be replaced`
+                            console.log(chalk.white(msg));
+                        }
 
-                    if (locations.length > 1) {
-                        if (!cssFileDuplicatesNameOnly.find(val => val == cssInfoObject.cssFile.toLowerCase())) {
-                            cssFileDuplicatesNameOnly.push(cssInfoObject.cssFile.toLowerCase());
-                            registerDuplicate(cssInfoObject, locations, cssFileDupicatesDetail);
+                        if (locations.length > 1) {
+                            if (!cssFileDuplicatesNameOnly.find(val => val == cssInfoObject.cssFile.toLowerCase())) {
+                                cssFileDuplicatesNameOnly.push(cssInfoObject.cssFile.toLowerCase());
+                                registerDuplicate(cssInfoObject, locations, cssFileDupicatesDetail);
+                            }
                         }
                     }
                 };
@@ -119,17 +120,12 @@ function showDuplicatesFound(cssFileDupicatesDetail) {
     })
 }
 
-function runAutoBuster(directory, ownerExtensions, performUpdate) {
-    parseLinks(directory, ownerExtensions, performUpdate)
+function runAutoBuster(directory, performUpdate, ownerExtensions, includeExternalCss) {
+    parseLinks(directory, performUpdate, ownerExtensions, includeExternalCss)
 }
 
-// function runAutoBusterPreview(directory, ownerExtensions, performUpdate) {
-//     parseLinks(directory, ownerExtensions, performUpdate = false)
-// }
-
-
 if (require.main === module) {
-    parseLinks('dist', ['.html', '.aspx', '.cshtml'], performUpdate = false);
+    parseLinks('dist', ownerExtensions = ['.html', '.aspx', '.cshtml'], performUpdate = false, includeExternalCss = true);
 } else {
     module.exports = {
         runAutoBuster,
