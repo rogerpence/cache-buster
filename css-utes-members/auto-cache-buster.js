@@ -1,3 +1,5 @@
+"use strict";
+
 const fileio = require('./file-io');
 const fs = require('fs');
 const { nanoid } = require('nanoid');
@@ -13,8 +15,10 @@ const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 const querystring = require('querystring');
 
-function runCssCacheBuster(directory, performUpdate = false, ownerExtensions, includeExternalCss = false) {
+function runCssCacheBuster(directory, performUpdate, ownerExtensions, includeExternalCss = false) {
     const fileInfo = getCssInfo(directory, performUpdate, ownerExtensions, includeExternalCss);
+
+    const allCssFileDuplicates = [];
 
     fileInfo.forEach(fi => {
         let fileContents = fileio.readFile(fi.filename);
@@ -28,29 +32,63 @@ function runCssCacheBuster(directory, performUpdate = false, ownerExtensions, in
 
             if (!cssFilenamesChecked.find(val => val == ci.cssFile.toLowerCase())) {
                 cssFilenamesChecked.push(ci.cssFile.toLowerCase());
-                const dupeLocations = (searchForDuplicateCssFiles(ci.cssFile, fileContents))
-                if (dupeLocations) {
-                    cssFileDuplicates.push({
-                        'filename': fi.filename,
-                        'cssFilename': ci.cssFile,
-                        'locations': dupeLocations
-                    })
-                }
+                searchForDuplicateCssFiles(fi.filename, ci.cssFile, fileContents, cssFileDuplicates)
+            }
+
+            if (performUpdate && oldFileContents !== fileContents) {
+                fileio.writeFile(fi.filename, fileContents);
+                fi.written = true;
             }
         });
 
-        if (performUpdate && oldFileContents !== fileContents) {
-            fileio.writeFile(fi.filename, fileContents);
+        if (cssFileDuplicates.length > 0) {
+            allCssFileDuplicates.push(cssFileDuplicates)
         }
-    })
+    });
+
+    //    showCssFileUpdateInfo(fileInfo, performUpdate);
+    //showDuplicatesFound(allCssFileDuplicates);
 }
 
-function searchForDuplicateCssFiles(cssFilename, fileContents) {
+function showCssFileUpdateInfo(fileInfo, performUpdate) {
+    let fileColor;
+    let cssFileColor;
+    if (performUpdate) {
+        headingColor = chalk.black.bgWhite;
+        fileColor = chalk.bold.green;
+        cssFileColor = chalk.green;
+        console.log(headingColor('These CSS files were updated'));
+    } else {
+        headingColor = chalk.black.bgWhite;
+        fileColor = chalk.bold.cyan;
+        cssFileColor = chalk.cyan;
+        console.log(headingColor('These CSS files were found'));
+    }
+    fileInfo.forEach(fi => {
+        let msg;
+        if (performUpdate && 'written' in fi && fi.written || !performUpdate) {
+            msg = `CSS parent file: ${fi.filename}`;
+            console.log(fileColor(msg));
+            fi.cssInfo.forEach(ci => {
+                msg = `  CSS file: ${ci.cssFile}`;
+                console.log(cssFileColor(msg));
+            });
+        }
+    });
+}
+
+function searchForDuplicateCssFiles(filename, cssFilename, fileContents, cssFileDuplicates) {
     const locations = findAllMatchLocations(cssFilename, fileContents);
-    return (locations.length > 1) ? locations : null;
+    if (locations.length > 1) {
+        cssFileDuplicates.push({
+            'filename': filename,
+            'cssFilename': cssFilename,
+            'locations': locations
+        })
+    }
 }
 
-function getCssInfo(directory, performUpdate = false, ownerExtensions, includeExternalCss = false) {
+function getCssInfo(directory, performUpdate, ownerExtensions, includeExternalCss = false) {
     const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
 
     //const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
@@ -90,9 +128,6 @@ function getCssInfo(directory, performUpdate = false, ownerExtensions, includeEx
     return allFileInfo;
 }
 
-
-// -------------------------
-
 function findAllMatchLocations(needle, haystack) {
     let location = 0;
     const locations = [];
@@ -107,26 +142,29 @@ function findAllMatchLocations(needle, haystack) {
     return locations;
 }
 
-function showDuplicatesFound(cssFileDupicatesDetail) {
-    cssFileDupicatesDetail.forEach(fileDuplicate => {
-        let msg = `file duplicate found: ${fileDuplicate.filename}`;
-        console.log(chalk.red.bgWhite(msg));
-        fileDuplicate.locations.forEach(location => {
-            msg = `  at absolute location: ${location}`
+function showDuplicatesFound(cssFileDuplicates) {
+    cssFileDuplicates.forEach(fileDuplicates => {
+        fileDuplicates.forEach(fileDuplicate => {
+            let msg = `CSS file duplicate: ${fileDuplicate.cssFilename} was found in: ${fileDuplicate.filename}`;
             console.log(chalk.red.bgWhite(msg));
-        })
-    })
+            fileDuplicate.locations.forEach(location => {
+                msg = `  at absolute file offset: ${location}`
+                console.log(chalk.red.bgWhite(msg));
+            })
+        });
+    });
 }
 
+
 function runAutoBuster(directory, performUpdate, ownerExtensions, includeExternalCss) {
-    parseLinks(directory, performUpdate, ownerExtensions, includeExternalCss)
+    runCssCacheBuster(directory, performUpdate, ownerExtensions, includeExternalCss)
 }
 
 if (require.main === module) {
-    //parseLinks('dist', ownerExtensions = ['.html', '.aspx', '.cshtml'], performUpdate = false, includeExternalCss = true);
-    runCssCacheBuster('dist', performUpdate = true, ownerExtensions = ['.html', '.aspx', '.cshtml'], includeExternalCss = true);
+    runCssCacheBuster('dist', performUpdate = false, ownerExtensions = ['.html', '.aspx', '.cshtml'], includeExternalCss = true);
 } else {
     module.exports = {
         runAutoBuster,
+        getCssInfo
     }
 }

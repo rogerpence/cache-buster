@@ -47,6 +47,9 @@ function addCacheBusterArgs(y) {
 
 function addCssCacheBusterArgs(y) {
     return y
+        .option('help', {
+            alias: 'h'
+        })
         .option('root-directory', {
             alias: 'd',
             type: 'string',
@@ -64,6 +67,7 @@ function addCssCacheBusterArgs(y) {
             type: 'array',
             desc: 'CSS owner extensions',
             default: ['.html', '.cshtml', '.aspx', '.vue']
+                // -x .html .cshtml
         })
         .option('include-external-css', {
             alias: 'i',

@@ -5,16 +5,18 @@
     "main": "",
     "scripts": {
         "list-css": "node css-utes list-css-references -d dist",
-        "update-css-refs": "node css-utes css-cache-buster -d dist"
+        "css-cache-bust": "node css-utes css-cache-buster -d dist --update"
     },
     "keywords": [],
     "author": "Roger Pence <rp@rogerpence.com> (rogerpence.com)",
     "license": "ISC",
     "devDependencies": {
+        "chai": "^4.2.0",
         "chalk": "^4.1.0",
         "cheerio": "^1.0.0-rc.5",
         "jsdom": "^16.4.0",
         "jssoup": "^0.0.12",
+        "mocha": "^8.2.1",
         "nanoid": "^3.1.20",
         "node-html-parser": "^2.0.0",
         "pretty": "^2.0.0"
