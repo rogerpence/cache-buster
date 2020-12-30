@@ -1,6 +1,8 @@
 var assert = require('assert');
 
 describe('Basic Mocha String Testddd', function() {
+    const curDir = __dirname;
+
     it('should return number of charachters in a string', function() {
         assert.strictEqual("Hello".length, 5);
     });

@@ -16,8 +16,8 @@ const { JSDOM } = jsdom;
 const querystring = require('querystring');
 
 function runCssCacheBuster(directory, performUpdate, ownerExtensions, includeExternalCss = false) {
-    const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
-    //const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
+    //const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
+    const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
 
     const fileInfo = getCssInfo(cssOwnerFiles, performUpdate, ownerExtensions, includeExternalCss);
     const allCssFileDuplicates = [];
@@ -48,8 +48,13 @@ function runCssCacheBuster(directory, performUpdate, ownerExtensions, includeExt
         }
     });
 
-    showCssFileUpdateInfo(fileInfo, performUpdate);
-    showDuplicatesFound(allCssFileDuplicates);
+    console.table(fileInfo);
+
+    fileInfo.forEach(fi => {
+        console.table(fi.cssInfo);
+    });
+    // showCssFileUpdateInfo(fileInfo, performUpdate);
+    // showDuplicatesFound(allCssFileDuplicates);
 }
 
 function showCssFileUpdateInfo(fileInfo, performUpdate) {
@@ -107,7 +112,6 @@ function getCssInfo(cssOwnerFiles, performUpdate, ownerExtensions, includeExtern
             if (link.rel.toLowerCase() == 'stylesheet') {
                 const cssInfoObject = {}
                 cssInfoObject.href = link.href;
-                cssInfoObject.oldHref = link.href;
                 cssInfoObject.cssFile = cssInfoObject.href.replace(/\?.*/, '');
                 cssInfoObject.queryString = (cssInfoObject.href.includes('?')) ? cssInfoObject.href.replace(/^.*\?/, '') : '';
 
