@@ -16,8 +16,10 @@ const { JSDOM } = jsdom;
 const querystring = require('querystring');
 
 function runCssCacheBuster(directory, performUpdate, ownerExtensions, includeExternalCss = false) {
-    const fileInfo = getCssInfo(directory, performUpdate, ownerExtensions, includeExternalCss);
+    const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
+    //const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
 
+    const fileInfo = getCssInfo(cssOwnerFiles, performUpdate, ownerExtensions, includeExternalCss);
     const allCssFileDuplicates = [];
 
     fileInfo.forEach(fi => {
@@ -46,13 +48,14 @@ function runCssCacheBuster(directory, performUpdate, ownerExtensions, includeExt
         }
     });
 
-    //    showCssFileUpdateInfo(fileInfo, performUpdate);
-    //showDuplicatesFound(allCssFileDuplicates);
+    showCssFileUpdateInfo(fileInfo, performUpdate);
+    showDuplicatesFound(allCssFileDuplicates);
 }
 
 function showCssFileUpdateInfo(fileInfo, performUpdate) {
     let fileColor;
     let cssFileColor;
+    let headingColor;
     if (performUpdate) {
         headingColor = chalk.black.bgWhite;
         fileColor = chalk.bold.green;
@@ -88,11 +91,7 @@ function searchForDuplicateCssFiles(filename, cssFilename, fileContents, cssFile
     }
 }
 
-function getCssInfo(directory, performUpdate, ownerExtensions, includeExternalCss = false) {
-    const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
-
-    //const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
-
+function getCssInfo(cssOwnerFiles, performUpdate, ownerExtensions, includeExternalCss = false) {
     const allFileInfo = [];
 
     cssOwnerFiles.forEach(filename => {
