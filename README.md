@@ -1,3 +1,41 @@
+### Usage
+
+#### Running the Node.js code from the command line:
+
+$ node css-utes css-cache-buster [options]
+
+where the options are:
+
+|Option                   | Alias| Required |
+|:------------------------|:-----|:---------|
+|--root-directory         | -d   |  Yes     | 
+|--css-owner-extensions   | -x   |          |
+|--update                 | -u   |          |
+|--include-external-css   | -i   |          |
+|--version                |      |          | 
+|--help                   | -h   |          |
+
+* **root-directory** The root directory used to location CSS owner files. This directory, and all of its children directories, are searched.
+* **css-owner-extensions** Possible CSS owner file extensions. The default is .html, .aspx, cshtml, .vue. 
+* **update** File are updated only when this option is provided--otherwise a run is performed. 
+* **include-external-css** By default, any `href` value that starts with 'http' is ignored. Include this option if you want to add cache-busting to _all_ external CSS references. 
+
+**Examples**
+
+*note* This code will ultimately be an NPM package. Until testing is complete, have the code in your project's root and run it as shown below:
+
+Look in the `dist` directory (and its children) in the project's root directory and update all non-external `link` tag `href` values:
+
+    node css-utes css-cache-buster -d dist -u 
+
+Look in the `dist` directory (and its children) in the project's root directory and update _all_`link` tag `href` values (including external ones):
+
+    node css-utes css-cache-buster -d dist -u -i
+
+Look in the `dist` directory (and its children) in the project's root directory where the extensions are `.html` or `.pug` and update all non-external `link` tag `href` values:
+
+    node css-utes css-cache-buster -d dist -u -x .html .pug 
+
 ### How it works
 
 #### Collecting CSS owner files
@@ -74,7 +112,9 @@ The update is performed with this logic
         for each `fileInfo` object's `cssInfo` array element:
             search and replace the file contents' old `href` with a new one using the information in the `cssInfo` element
 
-This search and replace is a little kludgy. I would much rather use an NPM HTML parsing package (the NPM `jsdom` very effective fetches CSS href info). However, virtually every NPM parsing package I tested (including `jssoup`, `node-html-parser`, `cheerio`, and `jsdom`) escaped query strings in the `href` tag. 
+### Replacing the `link` tag's `href` attribute value
+
+How a `link` tag's `href` is a little kludgy. I would much rather use an NPM HTML parsing package (the NPM `jsdom` very effective fetches CSS href info). However, virtually every NPM parsing package I tested (including `jssoup`, `node-html-parser`, `cheerio`, and `jsdom`) escaped query strings in the `href` tag. 
 
 For example, this code using `jsdom` 
 
@@ -88,4 +128,12 @@ results in the `href` value being:
 
     main.css?v=12335&amp;foo=bar
 
-I wasted way too much time trying to figure out how to disable this automatic escaping feature.     
+I wasted way too much time trying to figure out how to disable this automatic escaping feature. This raw search and replace is performed to replace the `link` tag's `href` attribute:
+
+    const oldHref = `${ci.cssFile}?${ci.queryString}`;
+    const newHref = `${ci.cssFile}?${ci.newQueryString}`;
+    fileContents = fileContents.replace(oldHref, newHref);
+
+The potential problem (which I think is highly unlikely) is that _any_ instance of the `link` tag's old `href` value in the target CSS owner file will be replaced. 
+
+I intend to continue researching NPM HTML parsers to see if one is available that replaces attributes with unescaped values. 

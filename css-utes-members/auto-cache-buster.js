@@ -5,19 +5,13 @@ const fs = require('fs');
 const { nanoid } = require('nanoid');
 const path = require('path');
 const chalk = require('chalk');
-
-// const JSSoup = require('jssoup').default;
-// const parser = require('node-html-parser');
-// const pretty = require('pretty');
-// const cheerio = require('cheerio');
-
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 const querystring = require('querystring');
 
 function runCssCacheBuster(directory, performUpdate, ownerExtensions, includeExternalCss = false) {
-    //const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
-    const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
+    const cssOwnerFiles = fileio.walk(directory, ownerExtensions);
+    //const cssOwnerFiles = ['C:\\Users\\thumb\\Documents\\programming\\node\\cache-buster\\dist\\index.html'];
 
     const fileInfo = getCssInfo(cssOwnerFiles, performUpdate, ownerExtensions, includeExternalCss);
     const allCssFileDuplicates = [];
@@ -29,12 +23,17 @@ function runCssCacheBuster(directory, performUpdate, ownerExtensions, includeExt
         const cssFilenamesChecked = [];
 
         fi.cssInfo.forEach(ci => {
-            const newHref = `${ci.cssFile}?${ci.newQueryString}`;
-            fileContents = fileContents.replace(ci.oldHref, newHref);
-
             if (!cssFilenamesChecked.find(val => val == ci.cssFile.toLowerCase())) {
                 cssFilenamesChecked.push(ci.cssFile.toLowerCase());
-                searchForDuplicateCssFiles(fi.filename, ci.cssFile, fileContents, cssFileDuplicates)
+                searchForDuplicateCssFiles(fi.filename, ci.oldHRef, fileContents, cssFileDuplicates)
+            }
+
+            const oldHref = `${ci.cssFile}?${ci.queryString}`;
+            const newHref = `${ci.cssFile}?${ci.newQueryString}`;
+            fileContents = fileContents.replace(oldHref, newHref);
+
+            if (oldFileContents === fileContents) {
+                console.log('file contents did not change');
             }
 
             if (performUpdate && oldFileContents !== fileContents) {
@@ -48,13 +47,13 @@ function runCssCacheBuster(directory, performUpdate, ownerExtensions, includeExt
         }
     });
 
-    console.table(fileInfo);
+    // console.table(fileInfo);
 
     fileInfo.forEach(fi => {
         console.table(fi.cssInfo);
     });
-    // showCssFileUpdateInfo(fileInfo, performUpdate);
-    // showDuplicatesFound(allCssFileDuplicates);
+    showCssFileUpdateInfo(fileInfo, performUpdate);
+    showDuplicatesFound(allCssFileDuplicates);
 }
 
 function showCssFileUpdateInfo(fileInfo, performUpdate) {
@@ -85,12 +84,12 @@ function showCssFileUpdateInfo(fileInfo, performUpdate) {
     });
 }
 
-function searchForDuplicateCssFiles(filename, cssFilename, fileContents, cssFileDuplicates) {
-    const locations = findAllMatchLocations(cssFilename, fileContents);
+function searchForDuplicateCssFiles(filename, searchValue, fileContents, cssFileDuplicates) {
+    const locations = findAllMatchLocations(searchValue, fileContents);
     if (locations.length > 1) {
         cssFileDuplicates.push({
             'filename': filename,
-            'cssFilename': cssFilename,
+            'searchValue': searchValue,
             'locations': locations
         })
     }
@@ -148,7 +147,7 @@ function findAllMatchLocations(needle, haystack) {
 function showDuplicatesFound(cssFileDuplicates) {
     cssFileDuplicates.forEach(fileDuplicates => {
         fileDuplicates.forEach(fileDuplicate => {
-            let msg = `CSS file duplicate: ${fileDuplicate.cssFilename} was found in: ${fileDuplicate.filename}`;
+            let msg = `CSS file duplicate: ${fileDuplicate.searchValue} was found in: ${fileDuplicate.filename}`;
             console.log(chalk.red.bgWhite(msg));
             fileDuplicate.locations.forEach(location => {
                 msg = `  at absolute file offset: ${location}`
@@ -164,7 +163,7 @@ function runAutoBuster(directory, performUpdate, ownerExtensions, includeExterna
 }
 
 if (require.main === module) {
-    runCssCacheBuster('dist', performUpdate = false, ownerExtensions = ['.html', '.aspx', '.cshtml'], includeExternalCss = true);
+    runCssCacheBuster('dist', performUpdate = true, ownerExtensions = ['.html', '.aspx', '.cshtml'], includeExternalCss = false);
 } else {
     module.exports = {
         runAutoBuster,
