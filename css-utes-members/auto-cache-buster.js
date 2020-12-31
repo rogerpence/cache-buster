@@ -19,17 +19,11 @@ function runCssCacheBuster(directory, performUpdate, ownerExtensions, includeExt
     fileInfo.forEach(fi => {
         let fileContents = fileio.readFile(fi.filename);
         const oldFileContents = fileContents;
-        const cssFileDuplicates = [];
-        const cssFilenamesChecked = [];
 
         fi.cssInfo.forEach(ci => {
-            if (!cssFilenamesChecked.find(val => val == ci.cssFile.toLowerCase())) {
-                cssFilenamesChecked.push(ci.cssFile.toLowerCase());
-                searchForDuplicateCssFiles(fi.filename, ci.oldHRef, fileContents, cssFileDuplicates)
-            }
-
             const oldHref = `${ci.cssFile}?${ci.queryString}`;
             const newHref = `${ci.cssFile}?${ci.newQueryString}`;
+
             fileContents = fileContents.replace(oldHref, newHref);
 
             if (oldFileContents === fileContents) {
@@ -41,25 +35,19 @@ function runCssCacheBuster(directory, performUpdate, ownerExtensions, includeExt
                 fi.written = true;
             }
         });
-
-        if (cssFileDuplicates.length > 0) {
-            allCssFileDuplicates.push(cssFileDuplicates)
-        }
     });
 
-    // console.table(fileInfo);
-
-    fileInfo.forEach(fi => {
-        console.table(fi.cssInfo);
-    });
     showCssFileUpdateInfo(fileInfo, performUpdate);
-    showDuplicatesFound(allCssFileDuplicates);
 }
 
 function showCssFileUpdateInfo(fileInfo, performUpdate) {
     let fileColor;
     let cssFileColor;
     let headingColor;
+    let warningColor = chalk.bold.yellow;
+
+    let uniqueCssFiles = []
+
     if (performUpdate) {
         headingColor = chalk.black.bgWhite;
         fileColor = chalk.bold.green;
@@ -69,30 +57,28 @@ function showCssFileUpdateInfo(fileInfo, performUpdate) {
         headingColor = chalk.black.bgWhite;
         fileColor = chalk.bold.cyan;
         cssFileColor = chalk.cyan;
-        console.log(headingColor('These CSS files were found'));
+        console.log(headingColor('These CSS files were found -- no update performed (use --update option to update)'));
     }
     fileInfo.forEach(fi => {
         let msg;
         if (performUpdate && 'written' in fi && fi.written || !performUpdate) {
             msg = `CSS parent file: ${fi.filename}`;
             console.log(fileColor(msg));
+            uniqueCssFiles = []
             fi.cssInfo.forEach(ci => {
-                msg = `  CSS file: ${ci.cssFile}`;
-                console.log(cssFileColor(msg));
+                if (uniqueCssFiles.find(val => val == ci.cssFile.toLowerCase())) {
+                    msg = `  CSS file: ${ci.cssFile} (multiple occurrences)`;
+                    console.log(warningColor(msg));
+                } else {
+                    msg = `  CSS file: ${ci.cssFile}`;
+                    uniqueCssFiles.push(ci.cssFile);
+                    console.log(cssFileColor(msg));
+                }
+
+                if (ci.replacedOccurrences == 1) {} else {}
             });
         }
     });
-}
-
-function searchForDuplicateCssFiles(filename, searchValue, fileContents, cssFileDuplicates) {
-    const locations = findAllMatchLocations(searchValue, fileContents);
-    if (locations.length > 1) {
-        cssFileDuplicates.push({
-            'filename': filename,
-            'searchValue': searchValue,
-            'locations': locations
-        })
-    }
 }
 
 function getCssInfo(cssOwnerFiles, performUpdate, ownerExtensions, includeExternalCss = false) {
@@ -113,6 +99,7 @@ function getCssInfo(cssOwnerFiles, performUpdate, ownerExtensions, includeExtern
                 cssInfoObject.href = link.href;
                 cssInfoObject.cssFile = cssInfoObject.href.replace(/\?.*/, '');
                 cssInfoObject.queryString = (cssInfoObject.href.includes('?')) ? cssInfoObject.href.replace(/^.*\?/, '') : '';
+                cssInfoObject.replacedOccurrences = 0;
 
                 if (cssInfoObject.cssFile.toLowerCase().endsWith('.css')) {
                     if (includeExternalCss || !includeExternalCss && !cssInfoObject.cssFile.toLowerCase().startsWith('http')) {
@@ -129,34 +116,6 @@ function getCssInfo(cssOwnerFiles, performUpdate, ownerExtensions, includeExtern
 
     return allFileInfo;
 }
-
-function findAllMatchLocations(needle, haystack) {
-    let location = 0;
-    const locations = [];
-
-    do {
-        location = haystack.indexOf(needle, location);
-        if (location > 0) {
-            locations.push(location)
-        }
-    } while (location++ > 0);
-
-    return locations;
-}
-
-function showDuplicatesFound(cssFileDuplicates) {
-    cssFileDuplicates.forEach(fileDuplicates => {
-        fileDuplicates.forEach(fileDuplicate => {
-            let msg = `CSS file duplicate: ${fileDuplicate.searchValue} was found in: ${fileDuplicate.filename}`;
-            console.log(chalk.red.bgWhite(msg));
-            fileDuplicate.locations.forEach(location => {
-                msg = `  at absolute file offset: ${location}`
-                console.log(chalk.red.bgWhite(msg));
-            })
-        });
-    });
-}
-
 
 function runAutoBuster(directory, performUpdate, ownerExtensions, includeExternalCss) {
     runCssCacheBuster(directory, performUpdate, ownerExtensions, includeExternalCss)

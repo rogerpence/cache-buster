@@ -4,45 +4,12 @@ function getCmdLineArgs() {
     let args = yargs
         .scriptName('css utilities')
         .usage('$0 <cmd> [args]')
-        .command('cache-buster', 'description for help here', (y) => {
-            return addCacheBusterArgs(y);
-        }, (argv) => {})
-        .command('css-cache-buster', 'description for help here', (y) => {
-            return addCssCacheBusterArgs(y);
-        }, (argv) => {})
-        .command('list-css-references', 'description for help here', (y) => {
+        .command(['cache-bust', '$0'], 'description for help here', (y) => {
             return addCssCacheBusterArgs(y);
         }, (argv) => {})
         .argv;
 
     return args;
-}
-
-function addCacheBusterArgs(y) {
-    return y
-        .option('css-filesdddddddddddddd', {
-            alias: 'c',
-            type: 'array',
-            desc: 'One or more CSS files',
-            required: true
-        })
-        .option('css-owner-extensions', {
-            alias: 'x',
-            type: 'array',
-            desc: 'CSS owner extensions',
-            default: ['.html', 'cshtml', '.aspx', '.vue']
-        })
-        .option('css-owner-files', {
-            alias: 'w',
-            type: 'array',
-            desc: 'One or more css owner files',
-        })
-        .option('directory', {
-            alias: 'd',
-            type: 'string',
-            desc: 'directory',
-            required: true
-        })
 }
 
 function addCssCacheBusterArgs(y) {

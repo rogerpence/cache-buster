@@ -1,24 +1,30 @@
 {
-    "name": "forms-sass",
+    "name": "@rogerpence/css-cache-buster",
     "version": "1.0.0",
-    "description": "",
-    "main": "",
+    "description": "Add cache-busting query strings to CSS link tags",
+    "main": "css-utes.js",
     "scripts": {
-        "list-css": "node css-utes list-css-references -d dist",
-        "css-cache-bust": "node css-utes css-cache-buster -d dist --update"
+        "css-cache-bust": "node css-cache-buster cache-bust -d dist --update",
+        "css-cache-bust2": "node css-cache-buster -d dist --update"
     },
-    "keywords": [],
+    "keywords": [
+        "css",
+        "cache-bust"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rogerpence/css-cache-buster"
+    },
     "author": "Roger Pence <rp@rogerpence.com> (rogerpence.com)",
     "license": "ISC",
+    "dependencies": {
+        "chalk": "^4.1.0",
+        "jsdom": "^16.4.0",
+        "nanoid": "^3.1.20",
+        "yargs": "^13.3.2"
+    },
     "devDependencies": {
         "chai": "^4.2.0",
-        "chalk": "^4.1.0",
-        "cheerio": "^1.0.0-rc.5",
-        "jsdom": "^16.4.0",
-        "jssoup": "^0.0.12",
-        "mocha": "^8.2.1",
-        "nanoid": "^3.1.20",
-        "node-html-parser": "^2.0.0",
-        "pretty": "^2.0.0"
+        "mocha": "^8.2.1"
     }
 }

@@ -10,25 +10,24 @@ const args = cmdargs.getCmdLineArgs()
 if (require.main === module) {
     const argv = cmdargs.getCmdLineArgs();
     const commandName = argv._[0];
+    /*
+        if (typeof(commandName) == 'undefined' || commandName && commandName === 'cache-buster') {
+            if (!argv.cssOwnerFiles) {
+                argv.cssOwnerFiles = fileio.walk(argv.directory, argv.cssOwnerExtensions, argv.includeExternalCss);
+            } else {
+                fileio.checkForFiles(argv.cssOwnerFiles);
+            }
 
-    if (commandName === 'cache-buster') {
-        if (!argv.cssOwnerFiles) {
-            argv.cssOwnerFiles = fileio.walk(argv.directory, argv.cssOwnerExtensions, argv.includeExternalCss);
-        } else {
-            fileio.checkForFiles(argv.cssOwnerFiles);
-        }
+            cb.injectHashedCssReference(
+                argv.directory,
+                argv.cssFiles,
+                argv.cssOwnerFiles,
+                argv.cssOwnerExtensions);
 
-        cb.injectHashedCssReference(
-            argv.directory,
-            argv.cssFiles,
-            argv.cssOwnerFiles,
-            argv.cssOwnerExtensions);
-
-    } else if (commandName === 'css-cache-buster') {
+        } else 
+    */
+    if (typeof(commandName) == 'undefined' || commandName === 'cache-bust') {
         acb.runAutoBuster(argv.rootDirectory, argv.update, argv.cssOwnerExtensions, argv.includeExternalCss);
-
-    } else if (commandName === 'css') {
-        acb.runAutoBusterPreview(argv.rootDirectory, argv.cssOwnerExtensions, argv.omitExternalCss);
 
     } else {
         console.log(`Command not found: ${commandName}`);
